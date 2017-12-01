@@ -83,6 +83,14 @@ if [ ! -d $outdir ]; then mkdir $outdir; fi
 
 #1) outdir
 	if [ ! -d $outdir/Mapping ]; then mkdir $outdir/Mapping; fi
+    if [ ! -d $outdir/Mapping/$seed1 ]; then mkdir $outdir/Mapping/$seed1; fi
+    if [ ! -d $outdir/Mapping/$seed2 ]; then mkdir $outdir/Mapping/$seed2; fi
+    if [ ! -d $outdir/Mapping/$seed3 ]; then mkdir $outdir/Mapping/$seed3; fi
+    if [ ! -d $outdir/Mapping/$seed4 ]; then mkdir $outdir/Mapping/$seed4; fi
+    if [ ! -d $outdir/Mapping/$seed5 ]; then mkdir $outdir/Mapping/$seed5; fi
+    if [ ! -d $outdir/Mapping/$seed6 ]; then mkdir $outdir/Mapping/$seed6; fi
+    if [ ! -d $outdir/Mapping/$seed7 ]; then mkdir $outdir/Mapping/$seed7; fi
+    if [ ! -d $outdir/Mapping/$seed8 ]; then mkdir $outdir/Mapping/$seed8; fi
 
 #1.5) new variables
     S1fastqs=$(</$outdir/fastq/txtfiles/S1.txt)
@@ -188,7 +196,7 @@ if [ ! -d $outdir ]; then mkdir $outdir; fi
 	
 #2) Resource Manager Directives to .pbs File
 	echo '#!/bin/bash' > $outdir/Bamtools/$bamtoolspbs
-	echo '#PBS -N '$seed'' >> $outdir/Bamtools/$bamtoolspbs
+	echo '#PBS -N Bamtools' >> $outdir/Bamtools/$bamtoolspbs
 	echo '#PBS -S /bin/bash' >> $outdir/Bamtools/$bamtoolspbs
 	echo '#PBS -l walltime=8:00:00' >> $outdir/Bamtools/$bamtoolspbs
 	echo '#PBS -l nodes=1:ppn=1' >> $outdir/Bamtools/$bamtoolspbs
@@ -203,7 +211,11 @@ if [ ! -d $outdir ]; then mkdir $outdir; fi
 	
 	echo 'module load gcc/6.2.0' >> $outdir/Bamtools/$bamtoolspbs
 	echo 'module load bamtools/2.4.1' >> $outdir/Bamtools/$bamtoolspbs
-	
+
+    for seed in $outdir/Mapping/
+    do
+    $seed=seed
+
 	echo 'bamtools filter -in '$outdir'/Mapping/'$seed'/'$seed'_accepted_hits.bam -out '$outdir'/Bamtools/'$seed'/chr1.bam -mapQuality ">10" -region chr1' >> $outdir/Bamtools/$bamtoolspbs
 	echo 'bamtools filter -in '$outdir'/Mapping/'$seed'/'$seed'_accepted_hits.bam -out '$outdir'/Bamtools/'$seed'/chr2.bam -mapQuality ">10" -region chr2' >> $outdir/Bamtools/$bamtoolspbs
 	echo 'bamtools filter -in '$outdir'/Mapping/'$seed'/'$seed'_accepted_hits.bam -out '$outdir'/Bamtools/'$seed'/chr3.bam -mapQuality ">10" -region chr3' >> $outdir/Bamtools/$bamtoolspbs
@@ -239,9 +251,17 @@ if [ ! -d $outdir ]; then mkdir $outdir; fi
 	echo 'samtools idxstats '$outdir'/Bamtools/'$seed'/'$seed'_cleaned.bam > '$outdir'/Bamtools/'$seed'/'$seed'_stats.txt' >> $outdir/Bamtools/$bamtoolspbs
 	echo 'cut -f3 '$outdir'/Bamtools/'$seed'/'$seed'_stats.txt | paste -sd+ | bc >> '$outdir'/Bamtools/'$seed'/'$seed'_stats.txt' >> $outdir/Bamtools/$bamtoolspbs
 
+    done
+
 #4) Execute
     qsub $outdir/Bamtools/$bamtoolspbs
-			
+
+
+
+
+
+# the following is garbage
+
 #############
 # CUFFLINKS #
 #############
@@ -372,7 +392,4 @@ if [ ! -d $outdir ]; then mkdir $outdir; fi
 
 
 exit;
-
-
-
 
